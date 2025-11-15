@@ -51,4 +51,4 @@ app.post('/shipments', (req, res) => {
 
 app.get('/api/shipments', (req, res) => res.json(readShipments()));
 
-app.listen(PORT, () => console.log(`Legacy appp running at http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`Legacyy appp running at http://localhost:${PORT}`));
