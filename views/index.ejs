@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Logistics Shipment Tracker</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <h1>Shipment Tracker</h1>
+  <a href="/new">Add New Shipment</a>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Tracking ID</th>
+        <th>Status</th>
+        <th>Origin</th>
+        <th>Destination</th>
+        <th>Created At</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% shipments.forEach(shipment => { %>
+        <tr>
+          <td><%= shipment.id %></td>
+          <td><%= shipment.trackingId %></td>
+          <td><%= shipment.status %></td>
+          <td><%= shipment.origin %></td>
+          <td><%= shipment.destination %></td>
+          <td><%= shipment.createdAt %></td>
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
+</body>
+</html>
