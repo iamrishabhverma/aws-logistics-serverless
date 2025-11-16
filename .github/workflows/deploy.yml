@@ -1,5 +1,25 @@
 name: Deploy
-on: push
+
+on:
+  push:
+    branches: [ "main" ]
+
 jobs:
-  test: runs-on: ubuntu-latest; steps: - uses: actions/checkout@v2; run: npm test
-  deploy: needs: test; run: terraform apply -auto-approve
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run tests
+        run: npm test
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+      - name: Terraform Init
+        run: terraform init
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
