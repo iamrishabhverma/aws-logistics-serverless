@@ -3,8 +3,12 @@ const fs = require('fs');
 const path = require('path');
 
 const app = express();
-const PORT = 3000;
+// Read PORT from environment variable (Render assigns this), default to 3000 for local dev
+const PORT = process.env.PORT || 3000;
 const SHIPMENTS_FILE = path.join(__dirname, 'shipments.json');
+
+// In-memory fallback for persistent storage (useful when file system is ephemeral like Render)
+let shipmentsInMemory = [];
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '../views'));  // Adjust path if needed
@@ -14,14 +18,26 @@ app.use(express.static('../public'));  // Adjust path
 
 const readShipments = () => {
   try {
-    return JSON.parse(fs.readFileSync(SHIPMENTS_FILE, 'utf8'));
+    // Try to read from file first
+    const data = fs.readFileSync(SHIPMENTS_FILE, 'utf8');
+    shipmentsInMemory = JSON.parse(data);
+    return shipmentsInMemory;
   } catch (err) {
-    return [];
+    // File doesn't exist or can't be read; use in-memory data
+    // This is important for Render.com where the filesystem is ephemeral
+    return shipmentsInMemory;
   }
 };
 
 const writeShipments = (shipments) => {
-  fs.writeFileSync(SHIPMENTS_FILE, JSON.stringify(shipments, null, 2));
+  shipmentsInMemory = shipments;
+  try {
+    // Try to write to file (may fail on Render's ephemeral filesystem, but that's OK)
+    fs.writeFileSync(SHIPMENTS_FILE, JSON.stringify(shipments, null, 2));
+  } catch (err) {
+    console.warn('Could not write to file (ephemeral filesystem?), using in-memory storage');
+    // Data persists in memory for this session
+  }
 };
 
 app.get('/', (req, res) => {
@@ -51,4 +67,4 @@ app.post('/shipments', (req, res) => {
 
 app.get('/api/shipments', (req, res) => res.json(readShipments()));
 
-app.listen(PORT, () => console.log(`Legacyy appp running at http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`Legacy app running at http://localhost:${PORT}`));
