@@ -3,110 +3,116 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Add New Shipment</title>
+  <title>Shipments Portal</title>
+  <link rel="stylesheet" href="/styles.css">
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background-color: #f4f7fa;
       margin: 0;
       padding: 20px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
     }
     .container {
+      max-width: 1000px;
+      margin: 0 auto;
       background: white;
       padding: 30px;
       border-radius: 10px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      max-width: 500px;
-      width: 100%;
     }
     h1 {
       text-align: center;
       color: #333;
-      margin-bottom: 10px;
+      margin-bottom: 30px;
     }
-    h2 {
+    .controls {
       text-align: center;
-      color: #555;
-      margin-bottom: 20px;
-      font-size: 1.5em;
+      margin-bottom: 30px;
     }
-    form {
-      display: flex;
-      flex-direction: column;
-    }
-    label {
-      margin-bottom: 5px;
-      font-weight: bold;
-      color: #555;
-    }
-    input[type="text"], select {
-      padding: 10px;
-      margin-bottom: 15px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      font-size: 16px;
-      transition: border-color 0.3s;
-    }
-    input[type="text"]:focus, select:focus {
-      border-color: #007bff;
-      outline: none;
-    }
-    button {
-      padding: 12px;
+    .btn {
+      padding: 12px 24px;
       background-color: #007bff;
       color: white;
       border: none;
       border-radius: 5px;
       font-size: 16px;
       cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
       transition: background-color 0.3s;
-      margin-bottom: 20px;
     }
-    button:hover {
+    .btn:hover {
       background-color: #0056b3;
     }
-    .back-link {
-      text-align: center;
-      display: block;
-      color: #007bff;
-      text-decoration: none;
-      font-weight: bold;
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
     }
-    .back-link:hover {
-      text-decoration: underline;
+    table, th, td {
+      border: 1px solid #ddd;
+    }
+    th {
+      background-color: #007bff;
+      color: white;
+      padding: 12px;
+      text-align: left;
+    }
+    td {
+      padding: 12px;
+    }
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    tr:hover {
+      background-color: #f0f0f0;
+    }
+    .empty-message {
+      text-align: center;
+      color: #999;
+      padding: 40px;
+      font-size: 18px;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Verma Transport Shipments Portal</h1>
-    <h2>Add New Shipment</h2>
-    <form action="/shipments" method="POST">
-      <label for="trackingId">Tracking ID:</label>
-      <input type="text" id="trackingId" name="trackingId" required placeholder="Enter tracking ID">
-      
-      <label for="status">Status:</label>
-      <select id="status" name="status" required>
-        <option value="">Select Status</option>
-        <option value="initiated">Initiated</option>
-        <option value="in transit">In Transit</option>
-        <option value="completed">Completed</option>
-        <option value="paid">Paid</option>
-      </select>
-      
-      <label for="origin">Origin:</label>
-      <input type="text" id="origin" name="origin" placeholder="e.g., New York, NY">
-      
-      <label for="destination">Destination:</label>
-      <input type="text" id="destination" name="destination" placeholder="e.g., Los Angeles, CA">
-      
-      <button type="submit">Create Shipment</button>
-    </form>
-    <a href="/" class="back-link">Back to Shipments</a>
+    <h1>🚚 Verma Transport Shipments Portal</h1>
+    
+    <div class="controls">
+      <a href="/new" class="btn">+ Add New Shipment</a>
+    </div>
+
+    <% if (shipments && shipments.length > 0) { %>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Tracking ID</th>
+            <th>Status</th>
+            <th>Origin</th>
+            <th>Destination</th>
+            <th>Created At</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% shipments.forEach(shipment => { %>
+            <tr>
+              <td><%= shipment.id %></td>
+              <td><%= shipment.trackingId %></td>
+              <td><strong><%= shipment.status %></strong></td>
+              <td><%= shipment.origin %></td>
+              <td><%= shipment.destination %></td>
+              <td><%= new Date(shipment.createdAt).toLocaleString() %></td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    <% } else { %>
+      <div class="empty-message">
+        <p>No shipments yet. <a href="/new">Create your first shipment →</a></p>
+      </div>
+    <% } %>
   </div>
 </body>
 </html>

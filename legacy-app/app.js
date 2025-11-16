@@ -7,14 +7,19 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const SHIPMENTS_FILE = path.join(__dirname, 'shipments.json');
 
+// Base directory for templates and static files (repo root)
+const BASE_DIR = path.join(__dirname, '..');
+const VIEWS_DIR = path.join(BASE_DIR, 'views');
+const PUBLIC_DIR = path.join(BASE_DIR, 'public');
+
 // In-memory fallback for persistent storage (useful when file system is ephemeral like Render)
 let shipmentsInMemory = [];
 
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, '../views'));  // Adjust path if needed
+app.set('views', VIEWS_DIR);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static('../public'));  // Adjust path
+app.use(express.static(PUBLIC_DIR));
 
 const readShipments = () => {
   try {
