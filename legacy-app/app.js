@@ -45,6 +45,55 @@ const writeShipments = (shipments) => {
   }
 };
 
+// Optional: commit the updated shipments.json back to GitHub.
+// Controlled by env var `GIT_PUSH=true`. Requires `GITHUB_TOKEN` and `GITHUB_REPO` (owner/repo).
+const { spawnSync } = require('child_process');
+
+const gitCommitAndPush = () => {
+  if (process.env.GIT_PUSH !== 'true') return;
+  const token = process.env.GITHUB_TOKEN;
+  const repo = process.env.GITHUB_REPO; // e.g. 'iamrishabhverma/aws-logistics-modernization'
+  if (!token || !repo) {
+    console.warn('GIT_PUSH enabled but GITHUB_TOKEN or GITHUB_REPO not set — skipping push');
+    return;
+  }
+
+  try {
+    const remote = `https://${token}@github.com/${repo}.git`;
+    const name = process.env.GIT_COMMIT_NAME || 'render-automated-commit';
+    const email = process.env.GIT_COMMIT_EMAIL || 'render@localhost';
+
+    spawnSync('git', ['config', 'user.email', email]);
+    spawnSync('git', ['config', 'user.name', name]);
+
+    // Stage the shipments file (use path relative to repo root)
+    // Ensure we use a path that Git recognizes; app runs from project root on Render
+    const addResult = spawnSync('git', ['add', SHIPMENTS_FILE]);
+    if (addResult.status !== 0) {
+      console.warn('git add failed:', addResult.stderr && addResult.stderr.toString());
+    }
+
+    const commitResult = spawnSync('git', ['commit', '-m', 'Persist shipments.json from app']);
+    if (commitResult.status !== 0) {
+      const stderr = commitResult.stderr && commitResult.stderr.toString();
+      // If there's nothing to commit, skip push
+      if (stderr && stderr.includes('nothing to commit')) {
+        return;
+      }
+      console.warn('git commit failed:', stderr);
+    }
+
+    // Push using token-authenticated remote URL
+    const pushResult = spawnSync('git', ['push', remote, 'HEAD:main']);
+    if (pushResult.status !== 0) {
+      console.warn('git push failed:', pushResult.stderr && pushResult.stderr.toString());
+    }
+  } catch (err) {
+    console.warn('gitCommitAndPush failed:', err && err.message);
+  }
+};
+
+
 app.get('/', (req, res) => {
   const shipments = readShipments();
   res.render('index', { shipments });
