@@ -39,8 +39,10 @@ const writeShipments = (shipments) => {
   try {
     // Try to write to file (may fail on Render's ephemeral filesystem, but that's OK)
     fs.writeFileSync(SHIPMENTS_FILE, JSON.stringify(shipments, null, 2));
+    console.log(`✓ Wrote ${shipments.length} shipment(s) to ${SHIPMENTS_FILE}`);
   } catch (err) {
     console.warn('Could not write to file (ephemeral filesystem?), using in-memory storage');
+    console.warn('Error:', err.message);
     // Data persists in memory for this session
   }
 };
@@ -116,6 +118,7 @@ app.post('/shipments', (req, res) => {
   };
   shipments.push(newShipment);
   writeShipments(shipments);
+  gitCommitAndPush(); // Trigger git push if GIT_PUSH=true
   res.redirect('/');
 });
 
