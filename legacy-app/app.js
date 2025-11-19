@@ -19,7 +19,7 @@ app.set('view engine', 'ejs');
 app.set('views', VIEWS_DIR);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(PUBLIC_DIR));
+app.use (express.static(PUBLIC_DIR));
 
 const readShipments = () => {
   try {
@@ -54,7 +54,7 @@ const { spawnSync } = require('child_process');
 const gitCommitAndPush = () => {
   if (process.env.GIT_PUSH !== 'true') return;
   const token = process.env.GITHUB_TOKEN;
-  const repo = process.env.GITHUB_REPO; // e.g. 'iamrishabhverma/aws-logistics-modernization'
+  const repo = process.env.GITHUB_REPO; // e.g. 'iamrishabhverma/aws-logistics-serverless'
   if (!token || !repo) {
     console.warn('GIT_PUSH enabled but GITHUB_TOKEN or GITHUB_REPO not set — skipping push');
     return;
@@ -68,27 +68,39 @@ const gitCommitAndPush = () => {
     spawnSync('git', ['config', 'user.email', email]);
     spawnSync('git', ['config', 'user.name', name]);
 
-    // Stage the shipments file (use path relative to repo root)
-    // Ensure we use a path that Git recognizes; app runs from project root on Render
-    const addResult = spawnSync('git', ['add', SHIPMENTS_FILE]);
+    // Use relative path from repo root for git add
+    const relativePath = 'legacy-app/shipments.json';
+    
+    console.log(`[git] Adding ${relativePath}...`);
+    const addResult = spawnSync('git', ['add', relativePath], { cwd: BASE_DIR });
     if (addResult.status !== 0) {
       console.warn('git add failed:', addResult.stderr && addResult.stderr.toString());
+    } else {
+      console.log('[git] Added successfully');
     }
 
-    const commitResult = spawnSync('git', ['commit', '-m', 'Persist shipments.json from app']);
+    console.log('[git] Committing...');
+    const commitResult = spawnSync('git', ['commit', '-m', 'Persist shipments.json from app'], { cwd: BASE_DIR });
     if (commitResult.status !== 0) {
       const stderr = commitResult.stderr && commitResult.stderr.toString();
       // If there's nothing to commit, skip push
       if (stderr && stderr.includes('nothing to commit')) {
+        console.log('[git] Nothing to commit');
         return;
       }
       console.warn('git commit failed:', stderr);
+      return;
+    } else {
+      console.log('[git] Committed successfully');
     }
 
     // Push using token-authenticated remote URL
-    const pushResult = spawnSync('git', ['push', remote, 'HEAD:main']);
+    console.log('[git] Pushing to main...');
+    const pushResult = spawnSync('git', ['push', remote, 'HEAD:main'], { cwd: BASE_DIR });
     if (pushResult.status !== 0) {
       console.warn('git push failed:', pushResult.stderr && pushResult.stderr.toString());
+    } else {
+      console.log('[git] Pushed successfully to GitHub!');
     }
   } catch (err) {
     console.warn('gitCommitAndPush failed:', err && err.message);
