@@ -14,9 +14,19 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "[README.pdf](https://github.com/user-attachments/files/23568880/README.pdf)",
   "dependencies": {
+    "axios": "^1.13.2",
     "ejs": "^3.1.10",
     "express": "^5.1.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iamrishabhverma/aws-logistics-serverless.git"
+  },
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/iamrishabhverma/aws-logistics-serverless/issues"
+  },
+  "homepage": "https://github.com/iamrishabhverma/aws-logistics-serverless#readme"
 }
