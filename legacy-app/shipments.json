@@ -14,5 +14,13 @@
     "origin": "MI",
     "destination": "OH",
     "createdAt": "2025-11-27T00:02:59.379Z"
+  },
+  {
+    "id": 3,
+    "trackingId": "12987",
+    "status": "completed",
+    "origin": "NY",
+    "destination": "TN",
+    "createdAt": "2025-12-02T05:26:29.405Z"
   }
 ]
