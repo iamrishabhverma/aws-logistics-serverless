@@ -22,21 +22,5 @@
     "origin": "NY",
     "destination": "TN",
     "createdAt": "2025-12-02T05:26:29.405Z"
-  },
-  {
-    "id": 4,
-    "trackingId": "11224",
-    "status": "paid",
-    "origin": "NY",
-    "destination": "NA",
-    "createdAt": "2025-12-05T03:30:42.887Z"
-  },
-  {
-    "id": 5,
-    "trackingId": "45622",
-    "status": "initiated",
-    "origin": "CA",
-    "destination": "MI",
-    "createdAt": "2025-12-05T03:33:28.399Z"
   }
 ]
